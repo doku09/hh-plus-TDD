@@ -1,6 +1,6 @@
 package io.hhplus.tdd;
 
-import io.hhplus.tdd.common.exception.NotExistUserException;
+import io.hhplus.tdd.common.exception.MaxPointException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,8 +14,8 @@ class ApiControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleException(NotExistUserException e) {
-        return ResponseEntity.status(400).body(new ErrorResponse("400", "사용자 정보가 존재하지 않습니다."));
+    public ResponseEntity<ErrorResponse> handleException(MaxPointException e) {
+        return ResponseEntity.status(400).body(new ErrorResponse("400", e.getMessage()));
     }
 
     @ExceptionHandler
