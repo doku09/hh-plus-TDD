@@ -13,4 +13,8 @@ public class PointRepository {
 	public UserPoint getPointByUserId(long id) {
 		return db.selectById(id);
 	}
+
+	public UserPoint charge(long id, long amount) {
+		return db.insertOrUpdate(id,amount);
+	}
 }
