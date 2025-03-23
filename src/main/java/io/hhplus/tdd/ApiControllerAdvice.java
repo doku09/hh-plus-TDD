@@ -1,5 +1,6 @@
 package io.hhplus.tdd;
 
+import io.hhplus.tdd.common.exception.NotExistUserException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,4 +12,15 @@ class ApiControllerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         return ResponseEntity.status(500).body(new ErrorResponse("500", "에러가 발생했습니다."));
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException(NotExistUserException e) {
+        return ResponseEntity.status(400).body(new ErrorResponse("400", "사용자 정보가 존재하지 않습니다."));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException(IllegalArgumentException e) {
+        return ResponseEntity.status(400).body(new ErrorResponse("400", e.getMessage()));
+    }
+
 }
