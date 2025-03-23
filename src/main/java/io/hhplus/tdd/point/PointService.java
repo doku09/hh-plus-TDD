@@ -3,6 +3,7 @@ package io.hhplus.tdd.point;
 import io.hhplus.tdd.common.exception.ErrorCode;
 import io.hhplus.tdd.common.exception.MaxPointException;
 import io.hhplus.tdd.common.exception.NegativeChargeAmountException;
+import io.hhplus.tdd.common.exception.NotEnoughPointException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,8 @@ public class PointService {
 	private final PointRepository pointRepository;
 
 	public UserPoint getPointByUserId(long id) {
-		if (id < 0) {
-			throw new IllegalArgumentException("잘못된 사용자 아이디 입니다.");
+		if (id < 1) {
+			throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
 		}
 
 		return pointRepository.getPointByUserId(id);
@@ -22,13 +23,30 @@ public class PointService {
 
 	public UserPoint charge(long id, long amount) {
 
+		if (id < 1) throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
 		if (amount < 0) throw new NegativeChargeAmountException();
-		if(id<0) throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
 
 		UserPoint user = pointRepository.getPointByUserId(id);
 
 		if (user.point() + amount > PointConstants.MAX_POINT) throw new MaxPointException();
 
 		return pointRepository.charge(user.id(), user.point() + amount);
+	}
+
+	public UserPoint usePoint(long id, long amount) {
+
+		// Q) 사용자 아이디에 대한 validate가 반복되는데 validate 메서드가 어디에 위치해야 할까요?
+		if (id < 1) {
+			throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
+		}
+		if (amount < 0) {
+			throw new IllegalArgumentException(ErrorCode.NEGATIVE_AMOUNT.getMessage());
+		}
+
+		UserPoint findUser = pointRepository.getPointByUserId(id);
+
+		if(findUser.point() - amount < 0) throw new NotEnoughPointException();
+
+		return pointRepository.usePoint(id, findUser.point() - amount);
 	}
 }
