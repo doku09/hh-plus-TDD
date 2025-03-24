@@ -1,24 +1,10 @@
 package io.hhplus.tdd.point;
 
-import io.hhplus.tdd.database.UserPointTable;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+public interface PointRepository {
 
-@Repository
-@RequiredArgsConstructor
-public class PointRepository {
+	 UserPoint getPointByUserId(long id);
 
-	private final UserPointTable db;
+	 UserPoint charge(long id, long amount);
 
-	public UserPoint getPointByUserId(long id) {
-		return db.selectById(id);
-	}
-
-	public UserPoint charge(long id, long amount) {
-		return db.insertOrUpdate(id,amount);
-	}
-
-	public UserPoint usePoint(long id, long amount) {
-		return db.insertOrUpdate(id,amount);
-	}
+	 UserPoint usePoint(long id, long amount);
 }
