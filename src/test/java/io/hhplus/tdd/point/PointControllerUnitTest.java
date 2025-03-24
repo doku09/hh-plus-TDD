@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PointController.class)
-class PointControllerTest {
+class PointControllerUnitTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -71,7 +71,7 @@ class PointControllerTest {
 		long id = 1L;
 		long amount = 1000;
 
-		// RequestBody에서 String으로는 받지 못하는걸까요?
+		// Q) RequestBody에서 String으로는 받지 못하는걸까요?
 		HashMap<String, Long> map = new HashMap<>();
 		map.put("amount",1000L);
 

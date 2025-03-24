@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class PointRepositoryTest {
+class PointRepositoryUnitTest {
 
 	private PointRepository pointRepository;
 	private UserPointTable db;
 	@BeforeEach
 	void setUp() {
 		db = new UserPointTable();
-		pointRepository = new PointRepository(db);
+		pointRepository = new PointMapRepository(db);
 	}
 
 	@Test

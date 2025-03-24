@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class PointServiceTest {
+class PointServiceUnitTest {
 
 	private final long FIX_TIME = System.currentTimeMillis();
 
@@ -259,7 +259,6 @@ class PointServiceTest {
 			doReturn(new UserPoint(id,20000,FIX_TIME))
 				.when(pointRepository).getPointByUserId(id);
 
-			//Q) 왜 안될까
 //			doAnswer(invocation -> {
 //				Long userId = invocation.getArgument(0);
 //				Long newPoint = invocation.getArgument(1);
@@ -281,5 +280,25 @@ class PointServiceTest {
 			assertThat(findUser).isNotNull();
 		}
 	}
+	/**
+	 * 포인트 내역을 조회하는 기능
+	 * 행동분석
+	 * 1.
+	 * 2.
+	 * 3.
+	 * 4.
+	 * TC
+	 * 1. 성공
+	 *
+	 *
+	 * 2. 실패
+	 * -
+	 * -
+	 * -
+	 */
+	@Nested
+	@DisplayName("포인트 사용 테스트")
+	class SaveHistoryTests {
 
+	}
 }
