@@ -7,4 +7,8 @@ public record PointHistory(
         TransactionType type,
         long updateMillis
 ) {
+
+	public PointHistory(long userId, long amount, TransactionType type, long updateMillis) {
+		this(0, userId, amount, type, updateMillis);
+	}
 }

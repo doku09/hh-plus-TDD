@@ -7,6 +7,8 @@ import io.hhplus.tdd.common.exception.NotEnoughPointException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PointService {
@@ -30,6 +32,10 @@ public class PointService {
 
 		if (user.point() + amount > PointConstants.MAX_POINT) throw new MaxPointException();
 
+		PointHistory historyRequest = new PointHistory(id, amount, TransactionType.CHARGE, System.currentTimeMillis());
+
+		pointRepository.insertHistory(historyRequest);
+
 		return pointRepository.charge(user.id(), user.point() + amount);
 	}
 
@@ -47,6 +53,14 @@ public class PointService {
 
 		if(findUser.point() - amount < 0) throw new NotEnoughPointException();
 
+		PointHistory historyRequest = new PointHistory(id, amount, TransactionType.USE, System.currentTimeMillis());
+		pointRepository.insertHistory(historyRequest);
+
 		return pointRepository.usePoint(id, findUser.point() - amount);
+	}
+
+	public List<PointHistory> getHistoryByUserId(long id) {
+
+		return pointRepository.getHistoryListByUserId(id);
 	}
 }
