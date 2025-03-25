@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -77,6 +80,7 @@ class PointServiceUnitTest {
 	 * 2. 실패
 	 * - 사용자 ID가 0이하이면 실패한다.
 	 * - 넘겨받은 포인트가 음수이면 실패한다.
+	 * -
 	 */
 
 	@Nested
@@ -282,23 +286,28 @@ class PointServiceUnitTest {
 	}
 	/**
 	 * 포인트 내역을 조회하는 기능
-	 * 행동분석
-	 * 1.
-	 * 2.
-	 * 3.
-	 * 4.
-	 * TC
-	 * 1. 성공
-	 *
-	 *
-	 * 2. 실패
-	 * -
-	 * -
-	 * -
 	 */
 	@Nested
-	@DisplayName("포인트 사용 테스트")
-	class SaveHistoryTests {
+	@DisplayName("포인트 내역 조회 테스트")
+	class PointHistoryTests {
+		
+		@Test
+		@DisplayName("성공 - 특정 사용자의 포인트 내역을 조회한다.")
+		void getHistoryList() {
+			
+		  // given
+			long id = 1L;
 
+		  // when
+
+			when(pointRepository.getHistoryListByUserId(id))
+				.thenReturn(new ArrayList<>());
+
+			List<PointHistory> history = pointService.getHistoryByUserId(id);
+
+		  // then
+			verify(pointRepository).getHistoryListByUserId(id);
+			assertThat(history).isEmpty();
+		}
 	}
 }

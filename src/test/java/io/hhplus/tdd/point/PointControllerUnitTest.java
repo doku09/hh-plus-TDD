@@ -12,7 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,9 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PointController.class)
 class PointControllerUnitTest {
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -71,7 +70,6 @@ class PointControllerUnitTest {
 		long id = 1L;
 		long amount = 1000;
 
-		// Q) RequestBody에서 String으로는 받지 못하는걸까요?
 		HashMap<String, Long> map = new HashMap<>();
 		map.put("amount",1000L);
 
@@ -82,11 +80,45 @@ class PointControllerUnitTest {
 
 	  // then
 		mockMvc.perform(patch("/point/" + id + "/charge")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(map)))
+			.contentType(MediaType.TEXT_PLAIN)
+			.content("1000"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(id))
 			.andExpect(jsonPath("$.point").value(1000));
+	}
+	
+	@Test
+	@DisplayName("성공 - 사용자 아이디와 포인트를 넘기면 사용자에게 포인트를 충전한다.")
+	void chargePoint_success() throws Exception {
+		
+	  // given
+		long id = 1L;
+		String amount = "1000";
 
+	  // when
+		when(pointService.charge(id,Long.parseLong(amount)))
+			.thenReturn(UserPoint.empty(id));
+
+	  // then
+		mockMvc.perform(patch("/point/"+id+"/charge")
+			.contentType(MediaType.TEXT_PLAIN)
+			.content(amount)
+		).andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("성공 - 사용자 아이디를 넘기면 포인트 충전/사용 내역을 조회한다.")
+	void getPOintHistory_success() throws Exception {
+
+		// given
+		long id = 1L;
+
+		// when
+		when(pointService.getHistoryByUserId(id))
+			.thenReturn(anyList());
+
+		// then
+		mockMvc.perform(get("/point/"+id+"/histories"))
+			.andExpect(status().isOk());
 	}
 }

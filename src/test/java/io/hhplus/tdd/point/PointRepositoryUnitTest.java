@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,16 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class PointRepositoryUnitTest {
 
 	private PointRepository pointRepository;
-	private UserPointTable db;
+	private UserPointTable pointDB;
+	private PointHistoryTable historyDB;
+
 	@BeforeEach
 	void setUp() {
-		db = new UserPointTable();
-		pointRepository = new PointMapRepository(db);
-	}
-
-	@Test
-	@DisplayName("id에 대한 유효성검사를 진행해야할지? 음수같은 값")
-	void parameterValidation() {
+		pointDB = new UserPointTable();
+		historyDB = new PointHistoryTable();
+		pointRepository = new PointMapRepository(pointDB,historyDB);
 	}
 	
 	@Test

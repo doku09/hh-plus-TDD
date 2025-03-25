@@ -31,7 +31,7 @@ public class PointController {
 	}
 
 	/**
-	 * 특정 유저의 포인트 충전/이용 내역을 조회하는 기능을 작성해주세요.
+	 * 특정 유저의 포인트 충전/이용 내역을 조회하는 기능
 	 */
 	@GetMapping("{id}/histories")
 	public List<PointHistory> history(
@@ -46,15 +46,14 @@ public class PointController {
 	@PatchMapping("{id}/charge")
 	public UserPoint charge(
 		@PathVariable long id,
-		@RequestBody Map<String, Long> map
+		@RequestBody String amount
 	) {
-		Long amount = map.get("amount");
 
-		return pointService.charge(id, amount);
+		return pointService.charge(id, Long.parseLong(amount));
 	}
 
 	/**
-	 * TODO - 특정 유저의 포인트를 사용하는 기능을 작성해주세요.
+	 * 특정 유저의 포인트를 사용하는 기능
 	 */
 	@PatchMapping("{id}/use")
 	public UserPoint use(
