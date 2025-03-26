@@ -67,6 +67,7 @@ class PointServiceUnitTest {
 			assertThat(findUser.point()).isEqualTo(1000);
 		}
 	}
+
 	/**
 	 * 포인트를 충전하는 서비스 함수
 	 * 행동분석
@@ -199,7 +200,7 @@ class PointServiceUnitTest {
 	 * TC
 	 * 1. 성공
 	 * 유저아이디,사용할 포인트 -> 사용 후 유저포인트 반환
-	 *
+	 * <p>
 	 * 2. 실패
 	 * - 사용자 ID가 0이하이면 실패한다.
 	 * - 넘겨받은 포인트가 음수이면 실패한다.
@@ -218,7 +219,7 @@ class PointServiceUnitTest {
 			long amount = 1000;
 
 			// then
-			assertThatThrownBy(() -> pointService.usePoint(id,amount))
+			assertThatThrownBy(() -> pointService.usePoint(id, amount))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		}
@@ -232,7 +233,7 @@ class PointServiceUnitTest {
 			long amount = -1000;
 
 			// then
-			assertThatThrownBy(() -> pointService.usePoint(id,amount))
+			assertThatThrownBy(() -> pointService.usePoint(id, amount))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage(ErrorMessage.NEGATIVE_AMOUNT.getMessage());
 		}
@@ -241,7 +242,7 @@ class PointServiceUnitTest {
 		@DisplayName("실패 - 잔여 포인트가 사용할 포인트보다 적으면 실패한다.")
 		void notEnoughPoint_fail() {
 
-		  // given
+			// given
 			long id = 1L;
 			long amount = 10000;
 
@@ -258,12 +259,12 @@ class PointServiceUnitTest {
 		@DisplayName("성공 - 포인트 사용 성공")
 		void enoughPoint_success() {
 
-		  // given
+			// given
 			long id = 1L;
 			long amount = 10000;
 
-		  // when
-			doReturn(new UserPoint(id,20000,FIX_TIME))
+			// when
+			doReturn(new UserPoint(id, 20000, FIX_TIME))
 				.when(pointRepository).getPointByUserId(id);
 
 //			doAnswer(invocation -> {
@@ -273,12 +274,12 @@ class PointServiceUnitTest {
 //				return new UserPoint(userId,newPoint,FIX_TIME);
 //			}).when(pointRepository.usePoint(id,amount));
 
-			when(pointRepository.usePoint(id,amount))
+			when(pointRepository.usePoint(id, amount))
 				.thenAnswer(invocation -> {
 					Long userId = invocation.getArgument(0);
 					Long newPoint = invocation.getArgument(1);
 
-					return new UserPoint(userId,newPoint,FIX_TIME);
+					return new UserPoint(userId, newPoint, FIX_TIME);
 				});
 
 			UserPoint findUser = pointService.usePoint(id, amount);
@@ -287,28 +288,29 @@ class PointServiceUnitTest {
 			assertThat(findUser).isNotNull();
 		}
 	}
+
 	/**
 	 * 포인트 내역을 조회하는 기능
 	 */
 	@Nested
 	@DisplayName("포인트 내역 조회 테스트")
 	class PointHistoryTests {
-		
+
 		@Test
 		@DisplayName("성공 - 특정 사용자의 포인트 내역을 조회한다.")
 		void getHistoryList() {
-			
-		  // given
+
+			// given
 			long id = 1L;
 
-		  // when
+			// when
 
 			when(pointRepository.getHistoryListByUserId(id))
 				.thenReturn(new ArrayList<>());
 
 			List<PointHistory> history = pointService.getHistoryByUserId(id);
 
-		  // then
+			// then
 			verify(pointRepository).getHistoryListByUserId(id);
 			assertThat(history).isEmpty();
 		}

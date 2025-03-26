@@ -1,19 +1,21 @@
 package io.hhplus.tdd.point;
 
 import io.hhplus.tdd.common.exception.ErrorMessage;
-import io.hhplus.tdd.common.exception.MaxPointException;
-import io.hhplus.tdd.common.exception.NegativeChargeAmountException;
-import io.hhplus.tdd.common.exception.NotEnoughPointException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @RequiredArgsConstructor
 public class PointService {
 
 	private final PointRepository pointRepository;
+	//유저별로 락을 만들어서 A와 B가 동시에 접근했을 때는 허용하도록 한다.
+	private final Map<Long, ReentrantLock> userLockMap = new ConcurrentHashMap<>();
 
 	public UserPoint getPointByUserId(long id) {
 		if (id < 1) {
@@ -26,18 +28,26 @@ public class PointService {
 	public UserPoint charge(long id, long amount) {
 
 		if (id < 1) throw new IllegalArgumentException(ErrorMessage.NEGATIVE_USER_ID.getMessage());
+		System.out.println("[" + System.currentTimeMillis() + "]" + Thread.currentThread().getName());
 
-		UserPoint user = pointRepository.getPointByUserId(id);
+		ReentrantLock lock = userLockMap.computeIfAbsent(id, k -> new ReentrantLock()); // 키가 없으면 만들고 바로 리턴
 
-		Point point = Point.of(user.point());
+		lock.lock();
+		try {
+			UserPoint user = pointRepository.getPointByUserId(id);
 
-		point.charge(amount);
+			Point point = Point.of(user.point());
 
-		PointHistory historyRequest = new PointHistory(id, amount, TransactionType.CHARGE, System.currentTimeMillis());
+			point.charge(amount);
 
-		pointRepository.insertHistory(historyRequest);
+			PointHistory historyRequest = new PointHistory(id, amount, TransactionType.CHARGE, System.currentTimeMillis());
 
-		return pointRepository.charge(user.id(), point.getPoint());
+			pointRepository.insertHistory(historyRequest);
+
+			return pointRepository.charge(user.id(), point.getPoint());
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public UserPoint usePoint(long id, long amount) {
@@ -46,19 +56,24 @@ public class PointService {
 		if (id < 1) {
 			throw new IllegalArgumentException(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		}
-		if (amount < 0) {
-			throw new IllegalArgumentException(ErrorMessage.NEGATIVE_AMOUNT.getMessage());
+		System.out.println("[" + System.currentTimeMillis() + "]" + Thread.currentThread().getName());
+
+		ReentrantLock lock = userLockMap.computeIfAbsent(id, k -> new ReentrantLock());
+		lock.lock();
+
+		try {
+			UserPoint findUser = pointRepository.getPointByUserId(id);
+
+			Point point = Point.of(findUser.point());
+			point.use(amount);
+
+			PointHistory historyRequest = new PointHistory(id, amount, TransactionType.USE, System.currentTimeMillis());
+			pointRepository.insertHistory(historyRequest);
+
+			return pointRepository.usePoint(id, point.getPoint());
+		} finally {
+			lock.unlock();
 		}
-
-		UserPoint findUser = pointRepository.getPointByUserId(id);
-
-		Point point = Point.of(findUser.point());
-		point.use(amount);
-
-		PointHistory historyRequest = new PointHistory(id, amount, TransactionType.USE, System.currentTimeMillis());
-		pointRepository.insertHistory(historyRequest);
-
-		return pointRepository.usePoint(id, point.getPoint());
 	}
 
 	public List<PointHistory> getHistoryByUserId(long id) {
