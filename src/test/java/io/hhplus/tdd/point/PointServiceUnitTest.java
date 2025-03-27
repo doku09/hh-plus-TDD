@@ -1,6 +1,6 @@
 package io.hhplus.tdd.point;
 
-import io.hhplus.tdd.common.exception.ErrorCode;
+import io.hhplus.tdd.common.exception.ErrorMessage;
 import io.hhplus.tdd.common.exception.MaxPointException;
 import io.hhplus.tdd.common.exception.NegativeChargeAmountException;
 import io.hhplus.tdd.common.exception.NotEnoughPointException;
@@ -97,7 +97,7 @@ class PointServiceUnitTest {
 			// when && then
 			assertThatThrownBy(() -> pointService.charge(id, amount))
 				.isInstanceOf(IllegalArgumentException.class)
-				.hasMessage(ErrorCode.NEGATIVE_USER_ID.getMessage());
+				.hasMessage(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		}
 
 		@Test
@@ -217,7 +217,7 @@ class PointServiceUnitTest {
 			// then
 			assertThatThrownBy(() -> pointService.usePoint(id,amount))
 				.isInstanceOf(IllegalArgumentException.class)
-				.hasMessage(ErrorCode.NEGATIVE_USER_ID.getMessage());
+				.hasMessage(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		}
 
 		@Test
@@ -231,7 +231,7 @@ class PointServiceUnitTest {
 			// then
 			assertThatThrownBy(() -> pointService.usePoint(id,amount))
 				.isInstanceOf(IllegalArgumentException.class)
-				.hasMessage(ErrorCode.NEGATIVE_AMOUNT.getMessage());
+				.hasMessage(ErrorMessage.NEGATIVE_AMOUNT.getMessage());
 		}
 
 		@Test

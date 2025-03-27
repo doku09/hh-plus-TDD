@@ -1,6 +1,6 @@
 package io.hhplus.tdd.point;
 
-import io.hhplus.tdd.common.exception.ErrorCode;
+import io.hhplus.tdd.common.exception.ErrorMessage;
 import io.hhplus.tdd.common.exception.MaxPointException;
 import io.hhplus.tdd.common.exception.NegativeChargeAmountException;
 import io.hhplus.tdd.common.exception.NotEnoughPointException;
@@ -17,7 +17,7 @@ public class PointService {
 
 	public UserPoint getPointByUserId(long id) {
 		if (id < 1) {
-			throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
+			throw new IllegalArgumentException(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		}
 
 		return pointRepository.getPointByUserId(id);
@@ -25,7 +25,7 @@ public class PointService {
 
 	public UserPoint charge(long id, long amount) {
 
-		if (id < 1) throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
+		if (id < 1) throw new IllegalArgumentException(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		if (amount < 0) throw new NegativeChargeAmountException();
 
 		UserPoint user = pointRepository.getPointByUserId(id);
@@ -43,10 +43,10 @@ public class PointService {
 
 		// Q) 사용자 아이디에 대한 validate가 반복되는데 validate 메서드가 어디에 위치해야 할까요?
 		if (id < 1) {
-			throw new IllegalArgumentException(ErrorCode.NEGATIVE_USER_ID.getMessage());
+			throw new IllegalArgumentException(ErrorMessage.NEGATIVE_USER_ID.getMessage());
 		}
 		if (amount < 0) {
-			throw new IllegalArgumentException(ErrorCode.NEGATIVE_AMOUNT.getMessage());
+			throw new IllegalArgumentException(ErrorMessage.NEGATIVE_AMOUNT.getMessage());
 		}
 
 		UserPoint findUser = pointRepository.getPointByUserId(id);
