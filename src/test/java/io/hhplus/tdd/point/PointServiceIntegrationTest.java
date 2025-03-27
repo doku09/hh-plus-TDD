@@ -40,7 +40,6 @@ public class PointServiceIntegrationTest {
 		long amount = 20_000_000;
 
 		// when && then
-		assertThat(PointConstants.MAX_POINT).isEqualTo(10_000_000);
 		assertThatThrownBy(() -> pointService.charge(id, amount))
 			.isInstanceOf(MaxPointException.class);
 	}

@@ -108,7 +108,11 @@ class PointServiceUnitTest {
 			long id = 1L;
 			long amount = -1000;
 
-			// when && then
+			// when
+			when(pointRepository.getPointByUserId(id))
+				.thenReturn(new UserPoint(id,1000L,System.currentTimeMillis()));
+
+			// then
 			assertThatThrownBy(() -> pointService.charge(id, amount))
 				.isInstanceOf(NegativeChargeAmountException.class)
 				.hasMessage("충전할 금액은 음수가 될 수 없습니다.");
@@ -127,7 +131,6 @@ class PointServiceUnitTest {
 				.when(pointRepository).getPointByUserId(id);
 
 			// then
-			assertThat(PointConstants.MAX_POINT).isEqualTo(10_000_000);
 			assertThatThrownBy(() -> pointService.charge(id, amount))
 				.isInstanceOf(MaxPointException.class);
 			verify(pointRepository).getPointByUserId(id);

@@ -26,17 +26,18 @@ public class PointService {
 	public UserPoint charge(long id, long amount) {
 
 		if (id < 1) throw new IllegalArgumentException(ErrorMessage.NEGATIVE_USER_ID.getMessage());
-		if (amount < 0) throw new NegativeChargeAmountException();
 
 		UserPoint user = pointRepository.getPointByUserId(id);
 
-		if (user.point() + amount > PointConstants.MAX_POINT) throw new MaxPointException();
+		Point point = Point.of(user.point());
+
+		point.charge(amount);
 
 		PointHistory historyRequest = new PointHistory(id, amount, TransactionType.CHARGE, System.currentTimeMillis());
 
 		pointRepository.insertHistory(historyRequest);
 
-		return pointRepository.charge(user.id(), user.point() + amount);
+		return pointRepository.charge(user.id(), point.getPoint());
 	}
 
 	public UserPoint usePoint(long id, long amount) {
@@ -51,12 +52,13 @@ public class PointService {
 
 		UserPoint findUser = pointRepository.getPointByUserId(id);
 
-		if(findUser.point() - amount < 0) throw new NotEnoughPointException();
+		Point point = Point.of(findUser.point());
+		point.use(amount);
 
 		PointHistory historyRequest = new PointHistory(id, amount, TransactionType.USE, System.currentTimeMillis());
 		pointRepository.insertHistory(historyRequest);
 
-		return pointRepository.usePoint(id, findUser.point() - amount);
+		return pointRepository.usePoint(id, point.getPoint());
 	}
 
 	public List<PointHistory> getHistoryByUserId(long id) {
